@@ -1,6 +1,5 @@
 name: Gitleaks Pre-Commit Check
 
-# Trigger this workflow on push events to the specified branches and pull requests
 on:
   push:
     branches: [ "main", "dev", "release/*" ]
@@ -17,12 +16,10 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Gitleaks
-      uses: zricethezav/gitleaks-action@v1.0.9
+      uses: zricethezav/gitleaks-action@v1.3.0
       with:
-        config: ""
-        args: --redact --path . # you can specify additional Gitleaks arguments here
+        args: "--redact --path ." # you can specify additional Gitleaks arguments here
 
-    # This step will fail if Gitleaks finds secrets, preventing the commit/push
     - name: Check for Leaks
       run: |
         if gitleaks detect --path . --exit-code 1 --redact; then
