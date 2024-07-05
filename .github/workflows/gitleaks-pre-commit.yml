@@ -28,11 +28,11 @@ jobs:
 
     - name: Run Gitleaks
       run: |
-        gitleaks detect --path . --redact --exit-code 1
+        gitleaks detect -v --exit-code 1
 
     - name: Check for Leaks
       run: |
-        if gitleaks detect --path . --redact --exit-code 1; then
+        if gitleaks detect -v --exit-code 1; then
           echo "No secrets detected."
         else
           echo "Secrets detected! Please address the issues and try again."
