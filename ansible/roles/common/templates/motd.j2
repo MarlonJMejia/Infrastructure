@@ -1,0 +1,5 @@
+{% for item in common_motd_vars %}
+{% for key, value in item.items() %}
+{{ key }}{{ value }}
+{% endfor %}
+{% endfor %}

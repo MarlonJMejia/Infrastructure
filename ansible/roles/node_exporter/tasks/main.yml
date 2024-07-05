@@ -1,0 +1,100 @@
+---
+- name: Make a user for node_exporter
+  user:
+    name: node_exporter
+    shell: /sbin/nologin
+    create_home: no
+
+- name: Download node_exporter archive
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz
+    dest: /tmp/node_exporter-1.8.1.linux-amd64.tar.gz
+    mode: '0644'
+
+- name: Create directory for extraction
+  file:
+    path: /opt/node_exporter
+    state: directory
+    mode: '0755'
+
+- name: Extract specific file (e.g., node_exporter binary) from archive
+  command: "tar -zxvf /tmp/node_exporter-1.8.1.linux-amd64.tar.gz -C /opt/node_exporter node_exporter-1.8.1.linux-amd64/node_exporter --strip-components=1"
+  args:
+    creates: /opt/node_exporter/node_exporter
+
+- name: copy over the service file
+  copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+
+- name: copy over the socket file
+  copy:
+    src: node_exporter.socket
+    dest: /etc/systemd/system/node_exporter.socket
+  
+- name: Create /etc/sysconfig
+  file:
+    path: /etc/sysconfig
+    state: directory
+    mode: '0755'
+
+- name: copy over the sysconfig file
+  copy:
+    src: etc_sysconfig_node_exporter
+    dest: /etc/sysconfig/node_exporter
+    owner: node_exporter
+    group: node_exporter
+ 
+- name: Create /var/lib/node_exporter
+  file:
+    path: /var/lib/node_exporter/
+    state: directory
+    mode: '0755'
+    owner: node_exporter
+    group: node_exporter
+
+- name: Start the node_exporter service
+  systemd:
+    name: node_exporter
+    state: started
+    daemon_reload: yes
+    enabled: yes
+
+- name: Firewall set for 9100 to be accessible in Redhat
+  firewalld:
+    port: 9100/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  failed_when: false
+  ignore_errors: true
+  when: ansible_facts['os_family'] == "RedHat" and not ansible_facts['virtualization_type'] == "lxc"
+
+- name: Firewall set for 9100 to be accessible in Debian
+  ansible.builtin.ufw:
+    rule: allow
+    port: 9100
+    proto: tcp
+  when: ansible_facts['os_family'] == "Debian" and not ansible_facts['virtualization_type'] == "lxc"
+
+- name: Setup
+  copy:
+    content: |
+      [
+        {
+          "targets": [ "{{hostvars[item]['ansible_default_ipv4']['address']}}:9100" ],
+          "labels": {
+            "team": "infra",
+            "job": "node"
+           }
+        }
+      ]
+    dest: "/root/monitoring/{{item}}.json"
+  delegate_to: dockerapp.inside.lan
+  run_once: true
+  loop: "{{ play_hosts }}"
+
+- name: Restart prometheus
+  shell: docker restart prometheus
+  delegate_to: dockerapp.inside.lan
+  run_once: true

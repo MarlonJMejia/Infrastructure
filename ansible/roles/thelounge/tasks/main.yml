@@ -1,0 +1,9 @@
+---
+- name: Installtion is only for debian distributions
+  when: ansible_facts['os_family'] == "Debian"
+  block:
+    - name: Install NodeJS 22
+      ansible.builtin.include_tasks: install_nodejs22.yml
+
+    - name: Install thelounge
+      ansible.builtin.include_tasks: install_thelounge.yml

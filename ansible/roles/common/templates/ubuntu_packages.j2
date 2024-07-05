@@ -1,0 +1,66 @@
+{% for host in ansible_play_hosts_all %}
+{% if host not in ansible_play_hosts %}
+{{ host }} - was not reachable.
+{% endif  %}
+{% endfor %}
+
+{% for host in ansible_play_hosts_all %}
+{% set keys1 = ansible_facts.packages.keys() %}
+{% set keys2 = packages_before.ansible_facts.packages.keys() %}
+{% set different_keys = keys1 | difference(keys2) | union(keys2 | difference(keys1)) %}
+
+{% if different_keys %}
+New Packages have been installed:
+{% for key in different_keys %}
+- {{ key }}
+{% endfor %}
+{% else %}
+No new packages found.
+{% endif %}
+{% endfor %}
+
+{% macro find_version(data) %}
+    {% if data is mapping %}
+        {% if 'version' in data %}
+            {{ data['version'] }}
+        {% else %}
+            {# Handle case where 'version' key is not found #}
+            N/A
+        {% endif %}
+    {% elif data is iterable %}
+        {# Handle case where data is iterable, assuming a list of dictionaries #}
+        {% for item in data %}
+            {{ find_version(item) }}
+        {% endfor %}
+    {% else %}
+        {# Handle unexpected data types gracefully #}
+        N/A
+    {% endif %}
+{% endmacro %}
+
+{% set version1 = find_version(ansible_facts.packages) %}
+{% set version2 = find_version(packages_before.ansible_facts.packages) %}
+
+{% if version1 == version2 %}
+    <p>Both dictionaries have the same version: {{ version1 }}</p>
+{% else %}
+    <p>Version in dict1: {{ version1 }}, Version in dict2: {{ version2 }}</p>
+{% endif %}
+
+
+{% macro find_version(data) %}
+    {%- if 'version' in data -%}
+        {{- data['version'] -}}
+    {%- else -%}
+        N/A
+    {%- endif -%}
+{% endmacro %}
+
+{% set version1 = find_version(ansible_facts.packages.values()) %}
+{% set version2 = find_version(packages_before.ansible_facts.packages.values()) %}
+
+{% if version1 == version2 %}
+    <p>Both dictionaries have the same version: {{ version1 }}</p>
+{% else %}
+    <p>Version in dict1: {{ version1 }}, Version in dict2: {{ version2 }}</p>
+{% endif %}

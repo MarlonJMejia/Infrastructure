@@ -1,0 +1,12 @@
+---
+- name: Start prometheus-pve-exporter
+  ansible.builtin.systemd_service:
+    name: prometheus-pve-exporter.service
+    state: started
+    enabled: true
+
+- name: Restart prometheus-pve-exporter
+  ansible.builtin.systemd_service:
+    name: prometheus-pve-exporter.service
+    state: restarted
+    daemon_reload: true

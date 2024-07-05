@@ -1,0 +1,39 @@
+---
+install_packages: true
+sshd_config_file: true
+common_motd_info: true
+common_unattended_upgrades: true
+
+packages_to_install_debian:
+  - curl
+  - jq
+  - vim
+  - git
+  - tmux
+  - needrestart
+  - ncdu
+  - lsof
+  - aptitude
+  - fd-find
+  - ripgrep
+  - bash-completion
+
+packages_to_install_redhat:
+  - curl
+  - jq
+  - vim
+  - git
+  - ncurses
+  - tmux
+  - ncdu
+  - lsof
+  - bash-completion
+  - dnf-plugins-core
+
+# MOTD Information
+common_motd_vars:
+  - " FQDN:    ": "{{ ansible_fqdn }}"
+  - " Distro:  ": "{{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }}"
+  - " Virtual: ": "{{ 'YES' if ansible_virtualization_role == 'guest' else 'NO' }}"
+  - " CPUs:    ": "{{ ansible_processor_vcpus }}"
+  - " RAM:     ": "{{ (ansible_memtotal_mb / 1000) | round(1) }}GB"

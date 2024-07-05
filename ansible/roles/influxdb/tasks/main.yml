@@ -1,0 +1,46 @@
+---
+- name: Upgrade and install packages
+  when: ansible_facts['distribution'] == "Debian"
+  block:
+    - name: Install required packages
+      ansible.builtin.apt:
+        pkg:
+          - ca-certificates
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Download InfluxData APT key
+      ansible.builtin.get_url:
+        url: https://repos.influxdata.com/influxdata-archive.key
+        dest: /tmp/influxdata-archive.key
+        mode: "0644"
+      register: key_download
+
+    - name: Verify the checksum of the downloaded key
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          echo '943666881a1b8d9b849b74caebf02d3465d6beb716510d86a39f6c8e8dac7515 /tmp/influxdata-archive.key' | sha256sum -c
+        executable: /bin/bash
+      register: checksum_verify
+      changed_when: checksum_verify.rc != 0
+
+    - name: Process and install the key if checksum is correct
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          cat /tmp/influxdata-archive.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdata-archive.gpg > /dev/null
+        executable: /bin/bash
+      changed_when: checksum_verify.rc != 0
+
+    - name: Add InfluxDB repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive.gpg] https://repos.influxdata.com/debian stable main
+        state: present
+
+    - name: Install InfluxDB packages
+      ansible.builtin.apt:
+        name: influxdb2
+        state: present
+        update_cache: true

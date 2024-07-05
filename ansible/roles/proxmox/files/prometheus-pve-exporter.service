@@ -1,0 +1,10 @@
+[Unit]
+Description=prometheus-pve-service
+
+[Service]
+User=pve-exporter
+WorkingDirectory=/opt/prometheus-pve-exporter
+ExecStart=/opt/prometheus-pve-exporter/bin/python3 -m pve_exporter --config.file /opt/prometheus-pve-exporter/pve.yml
+
+[Install]
+WantedBy=multi-user.target

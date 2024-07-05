@@ -1,0 +1,48 @@
+---
+# - name: Ensure Baseline Configuration is applied
+# ansible.builtin.include_tasks:
+#   file: ./pre-tasks.yaml
+- name: Configure Wireguard s2s VPN endpoint
+  block:
+    - name: Get public IP address
+      ansible.builtin.uri:
+        url: https://ifconfig.me/ip
+        return_content: true
+      register: public_ip_result
+    - name: Create /etc/wireguard/wg0.conf for server
+      ansible.builtin.template:
+        src: templates/dmz0_wg0.yaml.j2
+        dest: /etc/wireguard/wg0.conf
+        owner: root
+        group: root
+        mode: "0755"
+      when: wireguard_server is true
+    - name: Create /etc/wireguard/wg0.conf for client
+      ansible.builtin.template:
+        src: templates/client_w0.yaml.j2
+        dest: /etc/wireguard/wg0.conf
+        owner: root
+        group: root
+        mode: "0755"
+      when: wireguard_server is false
+    - name: Create scripts/ directory if it does not exist
+      ansible.builtin.file:
+        path: /etc/wireguard/scripts
+        state: directory
+        mode: "0755"
+    - name: Copy multiple files to remote hosts
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: "0755"
+      with_items:
+        - { src: postdown.j2, dest: /etc/wireguard/scripts/remove-nat-routing.sh }
+        - { src: postup.j2, dest: /etc/wireguard/scripts/add-nat-routing.sh }
+    - name: Create wg0 tunnel
+      ansible.builtin.command:
+        cmd: /bin/wg-quick up /etc/wireguard/wg0.conf
+      changed_when: false
+    - name: Enable and start wg0 tunnel on reboot
+      ansible.builtin.systemd_service:
+        name: wg-quick@wg0.service
+        enabled: true

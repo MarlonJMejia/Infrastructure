@@ -1,0 +1,42 @@
+---
+- name: FQDN for freipa server
+  ansible.builtin.hostname:
+    name: "{{ server_name + '.' + domain }}"
+
+- name: FQDN for FreeIPA server
+  shell: |
+    hostname -F /etc/hostname && hostname -b "{{ server_name + '.' + domain }}"
+
+- name: Verify FQDN is already in /etc/hosts
+  shell: |
+    cat /etc/hosts
+  register: hosts_output
+
+# Appends the DHCP address to the host file when not present, do not forget to add a static IP assigment on your DHCP Server.
+- name: Update /etc/hosts
+  shell:
+    cmd: | 
+      ip addr show eth0 | awk '$1 == "inet" {gsub(/\/.*$/, "", $2); print $2 " '{{ server_name + "." + domain }}' {{ server_name }}"}' | awk '{print}' - /etc/hosts > /etc/hosts
+  when: ' server_name + "." + domain not in hosts_output.stdout'
+
+- name: Download freeipa Packages
+  ansible.builtin.dnf:
+    name:
+      - freeipa-server
+      - freeipa-server-dns
+      - freeipa-client
+    state: present
+
+# Install the freeipa-server. Hostname on the LXC Container needs to be it's FQDN.
+
+- name: Install freeipa-server
+  shell:
+    cmd: |
+      sudo ipa-server-install --realm "{{ domain | upper }}" \
+      --hostname="{{ server_name + '.' + domain }}" \
+      --ds-password {{ password }} \
+      --admin-password {{ password }} \
+      --no-ntp \
+      --idstart=60001 --idmax=64430 \
+      --unattended
+  register: freeipa_install

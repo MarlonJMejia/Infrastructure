@@ -1,0 +1,8 @@
+---
+- hosts: proxmox
+  become: true
+  gather_facts: false
+  vars: { sshd_config_file: false, common_motd_info: false }
+  roles:
+    - { role: proxmox, tags: hypervisor }
+    - { role: common, tags: all }

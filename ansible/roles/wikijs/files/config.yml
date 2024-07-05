@@ -1,0 +1,9 @@
+bindIP: 0.0.0.0
+port: 3000
+db:
+  type: sqlite
+  storage: /mnt/storage/appdata/wikijs/db.sqlite
+logLevel: info
+logFormat: default
+dataPath: /mnt/storage/appdata/wikijs/data
+bodyParserLimit: 5mb

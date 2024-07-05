@@ -1,0 +1,71 @@
+---
+
+- name: Required packages before NodeJS Installation
+  ansible.builtin.apt:
+    name:
+    - sudo
+    - curl
+    - mc
+    - ca-certificates
+    - gnupg
+    - git
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Add specified repository into sources list
+  block:
+    - name: Gather GPG Key
+      ansible.builtin.apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: 2F59B5F99B1BE0B4
+        state: present
+
+    - name: Add Reposority
+      ansible.builtin.apt_repository:
+        repo: "deb https://deb.nodesource.com/node_20.x nodistro main"
+        state: present
+
+- name: Install NodeJs
+  ansible.builtin.apt:
+    name:
+    - nodejs
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Create wikijs directory if it doesn't exist
+  ansible.builtin.file:
+    path: /mnt/storage/appdata/wikijs
+    state: directory
+    mode: '0750'
+
+- name: Download Wikijs Tarball
+  ansible.builtin.get_url:
+    url: https://github.com/Requarks/wiki/releases/latest/download/wiki-js.tar.gz
+    dest: /mnt/storage/appdata/wikijs/
+    mode: '0750'
+
+- name: Extract downloaded wikijs tarball
+  ansible.builtin.unarchive:
+    src: /mnt/storage/appdata/wikijs/wiki-js.tar.gz
+    dest: /mnt/storage/appdata/wikijs
+    remote_src: true
+
+- name: Copy config.yml to /mnt/storage/appdata/wikijs/config.yml
+  copy:
+    src: config.yml
+    dest: /mnt/storage/appdata/wikijs/config.yml
+    owner: root
+    group: root
+
+- name: Rebuild Sqlite3
+  ansible.builtin.command: 
+    cmd: npm rebuild sqlite3
+    chdir: /mnt/storage/appdata/wikijs
+  register: npm_sqlite3
+
+- name: Copy systemd service file to server
+  copy:
+    src: wikijs.service
+    dest: /etc/systemd/system/wikijs.service
+    owner: root
+    group: root
+  notify:
+    - Start wikijs

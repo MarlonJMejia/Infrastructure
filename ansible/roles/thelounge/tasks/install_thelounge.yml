@@ -1,0 +1,21 @@
+---
+- name: Download the .deb package for The Lounge
+  ansible.builtin.get_url:
+    url: https://github.com/thelounge/thelounge-deb/releases/download/v4.4.3/thelounge_4.4.3_all.deb
+    dest: /tmp/thelounge_4.4.3_all.deb
+    mode: "700"
+
+- name: Install the downloaded .deb package
+  ansible.builtin.apt:
+    deb: /tmp/thelounge_4.4.3_all.deb
+
+- name: Verify The Lounge installation
+  ansible.builtin.command: thelounge --version
+  register: lounge_version_output
+  changed_when: true
+  notify: Restart thelounge
+
+- name: Print The Lounge version
+  ansible.builtin.debug:
+    msg: "The Lounge version installed: {{ lounge_version_output.stdout if lounge_version_output is defined else 'Installation verification failed' }}"
+

@@ -1,0 +1,61 @@
+all:
+  children:
+    production:
+      children:
+
+        hypervisors:
+          children:
+            proxmox:
+              hosts:
+                proxmox.inside.lan: { proxmox.inside.lan }
+              vars: { install_packages: false, sshd_config_file: false } 
+
+        docker:
+          hosts:
+            dockerapp.inside.lan: { dockerapp.inside.lan }
+
+        wikijs:
+          hosts:
+            wikijs.inside.lan: { wikijs.inside.lan }
+
+        dmz:
+          children:
+            proxy:
+              children:
+                nginx:
+                  hosts:
+                    proxy.inside.lan: { proxy.inside.lan }
+                caddy:
+                  hosts:
+                    caddy.inside.lan: { caddy.inside.lan }
+            
+        s2s_tunnel:
+          children:
+            oci_cloud:
+              hosts:
+                10.10.10.2:
+                  ansible_user: "ubuntu"
+                  ansible_ssh_private_key_file: "/home/illegal/.ssh/oci_wireguard"
+              vars: { wireguard_server: true, sshd_config_file: false }
+
+        irc:
+          hosts:
+            thelounge.inside.lan: { thelounge.inside.lan }
+
+        influxdb:
+          hosts:
+            influxdb.inside.lan: { influxdb.inside.lan }
+
+        pxe:
+          hosts:
+            pxe.inside.lan: { pxe.inside.lan }
+
+        freeipa:
+          hosts:
+            ipa.inside.lan: { ipa.inside.lan }
+
+    development:
+      children:
+        testing:
+          hosts:
+            authentik.inside.lan: { authentik.inside.lan }

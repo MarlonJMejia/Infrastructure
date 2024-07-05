@@ -1,0 +1,7 @@
+---
+- hosts: pxe
+  become: true
+  gather_facts: false
+  roles:
+    - { role: netbootxyz, tags: all }
+    - { role: common, tags: all }

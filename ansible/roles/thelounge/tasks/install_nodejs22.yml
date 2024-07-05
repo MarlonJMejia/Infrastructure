@@ -1,0 +1,36 @@
+---
+- name: Update APT package index
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install required dependencies
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - curl
+
+- name: Download the Node.js setup script
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/setup_22.x
+    dest: /tmp/nodesource_setup.sh
+    mode: "0755"
+
+- name: Run the Node.js setup script
+  ansible.builtin.command: bash /tmp/nodesource_setup.sh
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+
+- name: Verify Node.js installation
+  ansible.builtin.command: node -v
+  register: node_version_output
+  changed_when: "'v22' in node_version_output.stdout"
+
+- name: Print Node.js version
+  ansible.builtin.debug:
+    msg: "Node.js version installed: {{ node_version_output.stdout }}"

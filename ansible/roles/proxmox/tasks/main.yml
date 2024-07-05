@@ -1,0 +1,14 @@
+---
+- name: Set authorized keys
+  ansible.posix.authorized_key:
+    user: root
+    key: >-
+      ssh-ed25519
+      AAAAC3NzaC1lZDI1NTE5AAAAIFLvP47W9GKZzbJ0b8M6LkbkjpPQYUi3sxUjchRCa95q
+      illegal@legal
+    state: present
+
+- name: Prometheus-pve-exporter
+  ansible.builtin.include_tasks: prometheus-pve-exporter.yml
+  when:
+    - prometheus_pve_exporter | default(true) | bool

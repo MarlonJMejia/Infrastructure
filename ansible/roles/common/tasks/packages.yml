@@ -1,0 +1,58 @@
+---
+# Debian distributions
+- name: Upgrade and install packages
+  when: ansible_facts['os_family'] == "Debian"
+  block:
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+      register: packages_before
+
+    - name: Upgrade dependencies
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+      register: app_upgrade_debian
+
+    - name: Install common packages
+      ansible.builtin.apt:
+        name: "{{ packages_to_install_debian }}"
+      register: app_install_debian
+
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Create file
+      ansible.builtin.template:
+        src: ubuntu_packages.j2
+        dest: ../packageinfo.txt
+      run_once: true
+      delegate_to: localhost
+
+#Redhat distributions
+- name: Upgrade and install packages
+  when: ansible_facts['os_family'] == "RedHat"
+  block:
+    - name: Update repositories
+      ansible.builtin.dnf:
+        update_cache: true
+      register: app_upgrade
+
+    - name: Install Packages
+      ansible.builtin.dnf:
+        name: "{{ packages_to_install_redhat }}"
+      register: app_install
+
+    - name: Show variables as a dictionary
+      ansible.builtin.debug:
+        msg:
+          - "{{ app_upgrade }}"
+          - "{{ app_install }}"
+
+    - name: Write a report about what has been done
+      ansible.builtin.template:
+        src: report.j2
+        dest: ../report-{{ ansible_date_time.iso8601_basic_short }}.txt
+      run_once: true
+      delegate_to: localhost

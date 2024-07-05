@@ -1,0 +1,51 @@
+---
+- name: Install required system packages
+  ansible.builtin.apt:
+    pkg:
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3-apt
+      - python3-pip
+    state: present
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  ansible.builtin.apt:
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Download Netbootxyz Docker compose file
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    force: true
+    dest: /mnt/storage/appdata/netbootxyz/docker-compose.yml
+    mode: "0644"
+
+- name: Install docker python package
+  ansible.builtin.apt:
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+- name: Start Netbootxyz docker compose
+  community.docker.docker_compose_v2:
+    project_src: /mnt/storage/appdata/netbootxyz
+    pull: always

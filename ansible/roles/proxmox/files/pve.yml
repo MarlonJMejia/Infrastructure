@@ -1,0 +1,6 @@
+default:
+    user: root@pam
+    token_name: "packer-cli"
+    token_value: "{{ vault_proxmox_token_secret }}"
+    # Optional: set to false to skip SSL/TLS verification
+    verify_ssl: false

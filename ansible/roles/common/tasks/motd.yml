@@ -1,0 +1,6 @@
+---
+- name: Create MOTD
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: preserve

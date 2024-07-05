@@ -1,0 +1,7 @@
+---
+- hosts: influxdb
+  become: true
+  gather_facts: false
+  roles:
+    - { role: influxdb, tags: all }
+    - { role: common, tags: all }

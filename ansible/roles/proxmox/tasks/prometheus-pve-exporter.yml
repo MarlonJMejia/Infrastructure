@@ -1,0 +1,72 @@
+---
+- name: Check if the prometheus-pve-exporter service is active
+  ansible.builtin.systemd_service:
+    name: prometheus-pve-exporter
+    state: started
+  register: service_status
+
+- name: Install prometheus-pve-exporter service
+  when:
+    - service_status.status["ActiveState"] != 'active'
+  block:
+    - name: Install Python-pip and Python-venv
+      ansible.builtin.apt:
+        name:
+          - python3-pip
+          - python3-venv
+
+    - name: Setup prometheus-pve-exporter user
+      ansible.builtin.user:
+        name: pve-exporter
+        shell: /sbin/nologin
+        create_home: false
+        state: present # Ensure the user exists
+
+    - name: Create directory '/opt/prometheus-pve-exporter'
+      ansible.builtin.file:
+        path: /opt/prometheus-pve-exporter
+        state: directory # Ensure the path is a directory
+        owner: pve-exporter # Set the owner to 'pve-exporter'
+        group: pve-exporter # Set the group to 'pve-exporter'
+        mode: "0744" # Set directory permissions (rwx for owner, rx for group and others)
+
+    - name: Create Python3 virtual environment
+      ansible.builtin.command:
+        cmd: python3 -m venv /opt/prometheus-pve-exporter
+      args:
+        creates: /opt/prometheus-pve-exporter/bin/activate
+
+    - name: Copy requirements.txt to remote host
+      ansible.builtin.copy:
+        src: requirements.txt
+        dest: /opt/prometheus-pve-exporter/requirements.txt
+        owner: pve-exporter
+        group: pve-exporter
+
+    - name: Copy pve.yml to remote host
+      ansible.builtin.copy:
+        src: pve.yml
+        dest: /opt/prometheus-pve-exporter/pve.yml
+        owner: pve-exporter
+        group: pve-exporter
+
+    - name: Install dependencies in virtual environment
+      ansible.builtin.command:
+        cmd: /opt/prometheus-pve-exporter/bin/pip3 install -r /opt/prometheus-pve-exporter/requirements.txt
+      environment:
+        VIRTUAL_ENV: /opt/prometheus-pve-exporter
+        PATH: /opt/prometheus-pve-exporter/bin:{{ ansible_env.PATH }}
+
+    - name: Copy pve-export.service to remote host
+      ansible.builtin.copy:
+        src: prometheus-pve-exporter.service
+        dest: /etc/systemd/system/prometheus-pve-exporter.service
+        owner: pve-exporter
+        group: pve-exporter
+      notify:
+        - Start prometheus-pve-exporter
+
+    - name: Clean up requirements.txt from remote host
+      ansible.builtin.file:
+        path: /opt/prometheus-pve-exporter/requirements.txt
+        state: absent

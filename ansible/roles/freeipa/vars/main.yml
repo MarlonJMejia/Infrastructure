@@ -1,0 +1,4 @@
+---
+server_name: ipa
+domain: inside.lan
+password: vaultpassword

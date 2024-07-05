@@ -1,0 +1,11 @@
+bak/
+notinuse/
+*.tfstate*
+.bak
+.terraform
+linux_amd64
+packer/
+*.swp
+ansible/cached_facts/
+ansible/examples/
+packageinfo*
