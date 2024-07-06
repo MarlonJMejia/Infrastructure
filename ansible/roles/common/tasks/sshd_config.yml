@@ -6,6 +6,7 @@
     owner: root
     group: root
     mode: "0600"
+    validate: "sshd -t -f %s"
   notify: Restart ssh
 
 - name: Ensure correct permissions on sshd_config

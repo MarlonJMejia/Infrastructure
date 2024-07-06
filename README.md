@@ -1,2 +1,5 @@
 `ansible-playbook site.yml`
+
 `ansible-playbook site.yml --limit webservers`
+
+`ansible-galaxy collection install community.general`

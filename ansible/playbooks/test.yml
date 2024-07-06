@@ -3,5 +3,5 @@
   become: true
   gather_facts: true
   roles:
-    - { role: proxy, tags: all }
+    #- { role: proxy, tags: all }
     - { role: common, tags: all }

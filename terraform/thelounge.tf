@@ -14,6 +14,10 @@ resource "proxmox_lxc" "thelounge" {
   cores           = 2
   tags = "debian, irc"
 
+  features {
+    nesting = true
+  }
+
   mountpoint {
     mp      = "/etc/thelounge"
     size    = "4G"

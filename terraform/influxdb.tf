@@ -12,7 +12,11 @@ resource "proxmox_lxc" "influxdb" {
   memory          = 1048
   cpuunits        = 1084
   cores           = 2
-  tags = "debian, influxdbs, monitoring"
+  tags = "debian, influxdb, monitoring"
+
+  features {
+    nesting = true
+  }
 
   mountpoint {
     mp      = "/var/lib/influxdb/"

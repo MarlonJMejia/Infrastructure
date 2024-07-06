@@ -15,6 +15,7 @@
         url: https://repos.influxdata.com/influxdata-archive.key
         dest: /tmp/influxdata-archive.key
         mode: "0644"
+        # checksum: sha256:943666881a1b8d9b849b74caebf02d3465d6beb716510d86a39f6c8e8dac7515
       register: key_download
 
     - name: Verify the checksum of the downloaded key

@@ -1,7 +1,7 @@
 ---
 - hosts: irc
   become: true
-  gather_facts: false
+  gather_facts: true
   # vars: { sshd_config_file: true }
   roles:
     - { role: common, tags: all }
