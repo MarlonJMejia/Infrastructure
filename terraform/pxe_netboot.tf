@@ -3,14 +3,12 @@ resource "proxmox_lxc" "netbootxyz" {
   hostname        = "pxe.inside.lan"
   ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.gz"
   unprivileged    = true
-  ssh_public_keys = <<-EOT
-    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVDJkj1RWQvGVkUEVMG1koaWCylROa0Ri7acbMjqTvj illegal@legal
-  EOT
+  ssh_public_keys = var.ssh_public_keys
   start           = true
   onboot          = true
   vmid            = var.netbootxyz_lxcid
   memory          = 2048
-  tags = "debian, pxe"
+  tags = "debian;pxe"
 
   features {
     fuse = true

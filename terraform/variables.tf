@@ -1,7 +1,7 @@
 variable "proxmox_api_url" {
   description = "The Proxmox API URL"
   type        = string
-  default     = "https://proxmox.inside.box:8006/api2/json"
+  default     = "https://proxmox.inside.lan:8006/api2/json"
 }
 
 variable "proxmox_user" {
@@ -10,10 +10,10 @@ variable "proxmox_user" {
   default     = "root@pam"
 }
 
-variable "proxmox_password" {
-  description = "The Proxmox user password"
-  type        = string
-}
+# variable "proxmox_password" {
+#   description = "The Proxmox user password"
+#   type        = string
+# }
 
 # variable "proxmox_token_id" {
 #   description = "The Proxmox token ID"
@@ -25,10 +25,11 @@ variable "proxmox_password" {
 #   type        = string
 # }
 
-variable "pub_ssh_key" {
-  description = "Public SSH key for passwordless login/Ansible admining"
-  type        = string
-  default     = "~/.ssh/applications.pub"
+variable "ssh_public_keys" {
+  type    = string
+  default = <<-EOT
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVDJkj1RWQvGVkUEVMG1koaWCylROa0Ri7acbMjqTvj illegal@legal
+  EOT
 }
 
 variable "docker_lxcid" {

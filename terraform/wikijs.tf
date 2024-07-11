@@ -3,16 +3,14 @@ resource "proxmox_lxc" "wikijs" {
   hostname        = "wikijs.inside.lan"
   ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.gz"
   unprivileged    = true
-  ssh_public_keys = <<-EOT
-    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVDJkj1RWQvGVkUEVMG1koaWCylROa0Ri7acbMjqTvj illegal@legal
-  EOT
+  ssh_public_keys = var.ssh_public_keys
   start           = true
   onboot          = true
   vmid            = var.wikijs_lxcid
   memory          = 3000
   description = "<img src='https://raw.githubusercontent.com/requarks/wiki/904260fd44729ed2f75267daebd70499305121f8/client/static/svg/logo-wikijs.svg'/>"
 
-  tags = "debian, docs"
+  tags = "debian;docs"
 
   // Terraform will crash without rootfs defined
   rootfs {
@@ -43,6 +41,7 @@ resource "proxmox_lxc" "wikijs" {
   lifecycle {
     ignore_changes = [
       mountpoint[0].storage,
+      description,
     ]
   }
 }
