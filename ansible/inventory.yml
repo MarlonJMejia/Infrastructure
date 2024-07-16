@@ -8,11 +8,11 @@ all:
             proxmox:
               hosts:
                 proxmox.inside.lan: { proxmox.inside.lan }
-              vars: { install_packages: false, sshd_config_file: false } 
+              vars: { common_install_packages: false, common_sshd_config_file: false } 
 
         docker:
           hosts:
-            dockerapp.inside.lan: { dockerapp.inside.lan }
+            dockerapps.inside.lan: { dockerapps.inside.lan }
 
         wikijs:
           hosts:
@@ -36,7 +36,7 @@ all:
                 10.10.10.2:
                   ansible_user: "ubuntu"
                   ansible_ssh_private_key_file: "/home/illegal/.ssh/oci_wireguard"
-              vars: { wireguard_server: true, sshd_config_file: false }
+              vars: { wireguard_server: true, common_sshd_config_file: false }
 
         irc:
           hosts:
@@ -58,4 +58,6 @@ all:
       children:
         testing:
           hosts:
-            authentik.inside.lan: { authentik.inside.lan }
+            10.0.30.112:
+              ansible_user: "debian"
+              ansible_ssh_private_key_file: "/home/illegal/.ssh/applications"

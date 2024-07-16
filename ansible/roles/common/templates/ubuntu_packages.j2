@@ -8,6 +8,8 @@
 {% set keys2 = packages_before.ansible_facts.packages.keys() %}
 {% set different_keys = keys1 | difference(keys2) | union(keys2 | difference(keys1)) %}
 
+{% for host in ansible_play_hosts_all %}
+{{ host }}
 {% if different_keys is defined and different_keys %}
 new_packages:
 {% for key in different_keys %}
@@ -17,7 +19,4 @@ new_packages:
 No new packages found.
 {% endif %}
 {% endfor %}
-
-{% if different_keys is defined %}
-{{ ansible_facts.packages.keys() }}
-{% endif %}
+{% endfor %}

@@ -1,16 +1,21 @@
 resource "proxmox_lxc" "wikijs" {
   target_node     = "proxmox"
   hostname        = "wikijs.inside.lan"
-  ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.gz"
+  ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
   unprivileged    = true
   ssh_public_keys = var.ssh_public_keys
   start           = true
   onboot          = true
   vmid            = var.wikijs_lxcid
   memory          = 3000
+  cpulimit        = 1
   description = "<img src='https://raw.githubusercontent.com/requarks/wiki/904260fd44729ed2f75267daebd70499305121f8/client/static/svg/logo-wikijs.svg'/>"
 
   tags = "debian;docs"
+  
+  features {
+    nesting = true
+  }
 
   // Terraform will crash without rootfs defined
   rootfs {
@@ -32,7 +37,7 @@ resource "proxmox_lxc" "wikijs" {
   // DNS Records will be created by opnsense for ansible to use
   network {
     name   = "eth0"
-    bridge = "vmbr1"
+    bridge = "vmbr0"
     ip = "dhcp"
     tag = "30"
     hwaddr = "BC:24:11:01:39:B6"

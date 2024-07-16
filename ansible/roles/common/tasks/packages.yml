@@ -10,13 +10,13 @@
 
     - name: Upgrade dependencies
       ansible.builtin.apt:
-        update_cache: true
+        cache_valid_time: 43200
         upgrade: true
       register: app_upgrade_debian
 
     - name: Install common packages
       ansible.builtin.apt:
-        name: "{{ packages_to_install_debian }}"
+        name: "{{ common_packages_to_install_debian }}"
       register: app_install_debian
 
     - name: Gather the package facts
@@ -29,6 +29,9 @@
         dest: ../packageinfo-{{ ansible_date_time.iso8601_basic_short }}.txt
       run_once: true
       delegate_to: localhost
+    
+    - name: Autoremove and Clean packages
+      ansible.builtin.apt: { autoremove: yes, clean: true }
 
 #Redhat distributions
 - name: Upgrade and install packages
@@ -41,7 +44,7 @@
 
     - name: Install Packages
       ansible.builtin.dnf:
-        name: "{{ packages_to_install_redhat }}"
+        name: "{{ common_packages_to_install_redhat }}"
       register: app_install
 
     - name: Show variables as a dictionary
@@ -56,3 +59,7 @@
         dest: ../report-{{ ansible_date_time.iso8601_basic_short }}.txt
       run_once: true
       delegate_to: localhost
+      
+    - name: Autoremove unneeded packages installed as dependencies
+      ansible.builtin.dnf:
+        autoremove: yes

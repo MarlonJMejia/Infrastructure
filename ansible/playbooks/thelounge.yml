@@ -2,7 +2,7 @@
 - hosts: irc
   become: true
   gather_facts: true
-  # vars: { sshd_config_file: true }
+  # vars: { common_sshd_config_file: true }
   roles:
     - { role: common, tags: all }
     - { role: thelounge, tags: all }

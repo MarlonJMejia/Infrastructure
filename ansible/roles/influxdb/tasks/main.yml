@@ -45,3 +45,4 @@
         name: influxdb2
         state: present
         update_cache: true
+      notify: "Restart influxdb"

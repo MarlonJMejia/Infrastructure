@@ -7,13 +7,13 @@
 - name: Install Packages
   ansible.builtin.include_tasks: packages.yml
   when:
-    - install_packages | default(true) | bool
+    - common_install_packages | default(true) | bool
 
 # Update SSH Config
 - name: Sshd_config
   ansible.builtin.include_tasks: sshd_config.yml
   when:
-    - sshd_config_file | default(true) | bool
+    - common_sshd_config_file | default(true) | bool
 
 # Update MOTD
 - name: MOTD

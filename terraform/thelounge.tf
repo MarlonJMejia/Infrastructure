@@ -1,7 +1,7 @@
 resource "proxmox_lxc" "thelounge" {
   target_node     = "proxmox"
   hostname        = "thelounge.inside.lan"
-  ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.gz"
+  ostemplate      = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
   unprivileged    = true
   ssh_public_keys = var.ssh_public_keys
   start           = true
@@ -10,6 +10,7 @@ resource "proxmox_lxc" "thelounge" {
   memory          = 1048
   cpuunits        = 1084
   cores           = 2
+  cpulimit        = 2
   tags = "debian;irc"
 
   features {
@@ -33,7 +34,7 @@ resource "proxmox_lxc" "thelounge" {
 
   network {
     name   = "eth0"
-    bridge = "vmbr1"
+    bridge = "vmbr0"
     ip = "dhcp"
     tag = "30"
     hwaddr = "bc:24:11:77:b4:89"

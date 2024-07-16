@@ -32,7 +32,7 @@ variable "ssh_public_keys" {
   EOT
 }
 
-variable "docker_lxcid" {
+variable "dockerapps_lxcid" {
   description = "Linux Container ID for docker"
   type        = number
   default     = "600"

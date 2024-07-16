@@ -1,10 +1,10 @@
 ---
-install_packages: true
-sshd_config_file: true
+common_install_packages: true
+common_sshd_config_file: true
 common_motd_info: true
 common_unattended_upgrades: true
 
-packages_to_install_debian:
+common_packages_to_install_debian:
   - curl
   - jq
   - vim
@@ -18,7 +18,7 @@ packages_to_install_debian:
   - ripgrep
   - bash-completion
 
-packages_to_install_redhat:
+common_packages_to_install_redhat:
   - curl
   - jq
   - vim
