@@ -40,7 +40,7 @@ def create_template(
             "qm", "create", str(vm_id), "--name", vm_name, "--ostype", ostype, "--tablet", "0"
         ]),
         ("Configuring Network", [
-            "qm", "set", str(vm_id), "--net0", f"virtio,bridge=vmbr1" + (f",tag={vm_vlan}" if vm_vlan else ""),
+            "qm", "set", str(vm_id), "--net0", f"virtio,bridge=vmbr0" + (f",tag={vm_vlan}" if vm_vlan else ""),
             "--memory", str(mem), "--cores", str(cores), "--cpu", "host"
         ]),
         ("Setting ISO", [
