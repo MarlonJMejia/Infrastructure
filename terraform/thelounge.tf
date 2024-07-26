@@ -7,8 +7,8 @@ resource "proxmox_lxc" "thelounge" {
   start           = true
   onboot          = true
   vmid            = var.thelounge_lxcid
-  memory          = 1048
-  cpuunits        = 1084
+  memory          = 3048
+  cpuunits        = 3084
   cores           = 2
   cpulimit        = 2
   tags = "debian;irc"
@@ -19,7 +19,7 @@ resource "proxmox_lxc" "thelounge" {
 
   mountpoint {
     mp      = "/etc/thelounge"
-    size    = "4G"
+    size    = "10G"
     slot    = 0
     key     = "0"
     storage = "/mnt/storage/appdata/thelounge"

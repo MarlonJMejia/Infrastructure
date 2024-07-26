@@ -35,7 +35,7 @@ variable "ssh_public_keys" {
 variable "dockerapps_lxcid" {
   description = "Linux Container ID for docker"
   type        = number
-  default     = "600"
+  default     = "700"
 }
 
 variable "proxy_lxcid" {

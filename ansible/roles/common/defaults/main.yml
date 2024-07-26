@@ -16,7 +16,10 @@ common_packages_to_install_debian:
   - aptitude
   - fd-find
   - ripgrep
+  - nala
   - bash-completion
+  - needrestart
+  - debsecan
 
 common_packages_to_install_redhat:
   - curl
@@ -27,6 +30,8 @@ common_packages_to_install_redhat:
   - tmux
   - ncdu
   - lsof
+  - fd-find
+  - ripgrep
   - bash-completion
   - dnf-plugins-core
 

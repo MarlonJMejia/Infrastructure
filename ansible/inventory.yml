@@ -11,8 +11,10 @@ all:
               vars: { common_install_packages: false, common_sshd_config_file: false } 
 
         docker:
-          hosts:
-            dockerapps.inside.lan: { dockerapps.inside.lan }
+          children:
+            monitoring:
+              hosts:
+                dockerapp.inside.lan: { dockerapps.inside.lan }
 
         wikijs:
           hosts:
@@ -59,5 +61,5 @@ all:
         testing:
           hosts:
             10.0.0.46:
-              ansible_user: "debian"
+              ansible_user: "rocky"
               ansible_ssh_private_key_file: "/home/illegal/.ssh/applications"

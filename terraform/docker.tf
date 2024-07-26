@@ -11,7 +11,7 @@ resource "proxmox_lxc" "dockerapps" {
   cpuunits        = 4084
   cores           = 2
   cpulimit        = 2
-  tags = "debian;irc"
+  tags = "debian;pxe"
 
   features {
     fuse = true
@@ -19,18 +19,21 @@ resource "proxmox_lxc" "dockerapps" {
     keyctl = true
   }
 
+  // Mount points for iso files, folders need to be created in Proxmox first.
+
   mountpoint {
-    mp      = "/root/dockerapps"
+    mp      = "/dockerapps/" # server storage
     size    = "8G"
     slot    = 0
     key     = "0"
-    storage = "/mnt/storage/appdata/dockerapps"
+    storage = "/mnt/storage/appdata/dockerapps/"
+    volume  = "/mnt/storage/appdata/dockerapps/"
   }
 
   // Terraform will crash without rootfs defined
   rootfs {
     storage = "local-lvm"
-    size    = "20000M"
+    size    = "3G"
   }
 
   network {

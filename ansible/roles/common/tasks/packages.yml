@@ -47,12 +47,6 @@
         name: "{{ common_packages_to_install_redhat }}"
       register: app_install
 
-    - name: Show variables as a dictionary
-      ansible.builtin.debug:
-        msg:
-          - "{{ app_upgrade }}"
-          - "{{ app_install }}"
-
     - name: Write a report about what has been done
       ansible.builtin.template:
         src: report.j2

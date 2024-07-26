@@ -9,3 +9,4 @@ packer/
 ansible/cached_facts/
 ansible/examples/
 packageinfo*
+Pipfile

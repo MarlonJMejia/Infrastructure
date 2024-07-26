@@ -5,12 +5,12 @@ import argparse
 import sys
 import logging
 import os
+from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
 
 def create_template(
     vm_id: int,
@@ -35,98 +35,37 @@ def create_template(
         ostype (str): Operating system type
     """
 
+    steps = [
+        ("Creating VM", [
+            "qm", "create", str(vm_id), "--name", vm_name, "--ostype", ostype, "--tablet", "0"
+        ]),
+        ("Configuring Network", [
+            "qm", "set", str(vm_id), "--net0", f"virtio,bridge=vmbr1" + (f",tag={vm_vlan}" if vm_vlan else ""),
+            "--memory", str(mem), "--cores", str(cores), "--cpu", "host"
+        ]),
+        ("Setting ISO", [
+            "qm", "set", str(vm_id), "--scsi0", f"local-lvm:0,import-from={iso_file},discard=on,ssd=1"
+        ]),
+        ("Configuring Boot", [
+            "qm", "set", str(vm_id), "--boot", "order=scsi0", "--scsihw", "virtio-scsi-single",
+            "--agent", "enabled=1,fstrim_cloned_disks=1"
+        ]),
+        ("Configuring Cloud-Init", [
+            "qm", "set", str(vm_id), "--ide2", "local-lvm:cloudinit", "--ipconfig0", "ip=dhcp"
+        ]),
+        ("Setting Cloud-Init Customization", [
+            "qm", "set", str(vm_id), "--cicustom", f"user=local:snippets/{cinit}"
+        ] if cinit else []),
+        ("Creating Template", ["qm", "template", str(vm_id)])
+    ]
+
     try:
-        logging.info("Creating VM with ID %s and name %s", vm_id, vm_name)
-
-        subprocess.check_call(
-            [
-                "qm",
-                "create",
-                str(vm_id),
-                "--name",
-                vm_name,
-                "--ostype",
-                ostype,
-                "--tablet",
-                "0",
-            ]
-        )
-
-        if vm_vlan:
-            subprocess.check_call(
-                [
-                    "qm",
-                    "set",
-                    str(vm_id),
-                    "--net0",
-                    f"virtio,bridge=vmbr1,tag={vm_vlan}",
-                    "--memory",
-                    str(mem),
-                    "--cores",
-                    str(cores),
-                    "--cpu",
-                    "host",
-                ]
-            )
-        else:
-            subprocess.check_call(
-                [
-                    "qm",
-                    "set",
-                    str(vm_id),
-                    "--net0",
-                    f"virtio,bridge=vmbr1",
-                    "--memory",
-                    str(mem),
-                    "--cores",
-                    str(cores),
-                    "--cpu",
-                    "host",
-                ]
-            )
-
-        subprocess.check_call(
-            [
-                "qm",
-                "set",
-                str(vm_id),
-                "--scsi0",
-                f"local-lvm:0,import-from={iso_file},discard=on,ssd=1",
-            ]
-        )
-        subprocess.check_call(
-            [
-                "qm",
-                "set",
-                str(vm_id),
-                "--boot",
-                "order=scsi0",
-                "--scsihw",
-                "virtio-scsi-single",
-                "--agent",
-                "enabled=1,fstrim_cloned_disks=1",
-            ]
-        )
-
-        logging.info("Configuring Cloud-Init for VM ID %s", vm_id)
-        subprocess.check_call(
-            [
-                "qm",
-                "set",
-                str(vm_id),
-                "--ide2",
-                "local-lvm:cloudinit",
-                "--ipconfig0",
-                "ip=dhcp",
-            ]
-        )
-
-        if cinit:
-            subprocess.check_call(
-                ["qm", "set", str(vm_id), "--cicustom", f"user=local:snippets/{cinit}"]
-            )
-
-        subprocess.check_call(["qm", "template", str(vm_id)])
+        with tqdm(total=len(steps), desc="Creating Template") as pbar:
+            for desc, cmd in steps:
+                if cmd:  # Only run if command is not empty
+                    logging.info(f"{desc} for VM ID {vm_id}")
+                    subprocess.check_call(cmd)
+                pbar.update(1)
 
         logging.info("Template creation for VM ID %s completed successfully", vm_id)
     except subprocess.CalledProcessError as e:
@@ -156,7 +95,7 @@ def main():
         "--cinit",
         type=str,
         required=False,
-        default=False,
+        default="",
         help="Cloud-Init configuration file name",
     )
     parser.add_argument("--iso", type=str, required=True, help="Path to the ISO file")
@@ -185,7 +124,7 @@ def main():
     cinit_file = os.path.join(snippets_dir, args.cinit)
     if not os.path.exists(cinit_file):
         logging.error(
-            f"The Cloud-Init file '{args.cinit}' does not exist in '{snippets_dir}'."
+            f"The Cloud-Init file '{args.cinit}' does not exist in '{snippets_dir}'"
         )
         sys.exit(1)
 

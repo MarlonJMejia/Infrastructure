@@ -19,7 +19,7 @@ resource "proxmox_lxc" "influxdb" {
 
   mountpoint {
     mp      = "/var/lib/influxdb/"
-    size    = "2G"
+    size    = "8G"
     slot    = 0
     key     = "0"
     storage = "/mnt/storage/appdata/influxdb/"
