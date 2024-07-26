@@ -1,3 +1,7 @@
+```
+pip install tqdm
+```
+
 Basic VM
 
 ```bash

@@ -83,10 +83,10 @@ def main():
     parser.add_argument("--vmid", type=int, required=True, help="Virtual Machine ID")
     parser.add_argument("--name", type=str, required=True, help="Virtual Machine name")
     parser.add_argument(
-        "--vlan", type=int, required=False, default=False, help="VLAN ID"
+        "--vlan", type=int, required=False, default=0, help="VLAN ID"
     )
     parser.add_argument(
-        "--memory", type=int, required=False, default="2046", help="Memory size in MB"
+        "--memory", type=int, required=False, default=2046, help="Memory size in MB"
     )
     parser.add_argument(
         "--cores", type=int, required=False, default=2, help="Number of CPU cores"
@@ -119,14 +119,27 @@ def main():
         args.iso = os.path.join(os.getcwd(), args.iso)
         logging.info(f"Converted ISO path to absolute path: {args.iso}")
 
+    # Check that the ISO file is in the current directory or the correct ISO directory
+    iso_dir = "/var/lib/vz/template/iso"
+    if not os.path.exists(args.iso):
+        logging.info(f"ISO file not found in current directory, checking {iso_dir}")
+        iso_file_in_dir = os.path.join(iso_dir, os.path.basename(args.iso))
+        if os.path.exists(iso_file_in_dir):
+            args.iso = iso_file_in_dir
+            logging.info(f"ISO file found in {iso_dir}, using path: {args.iso}")
+        else:
+            logging.error(f"The ISO file must be located in the current directory or '{iso_dir}'")
+            sys.exit(1)
+
     # Check that the cloud-init file is there
-    snippets_dir = "/var/lib/vz/snippets"
-    cinit_file = os.path.join(snippets_dir, args.cinit)
-    if not os.path.exists(cinit_file):
-        logging.error(
-            f"The Cloud-Init file '{args.cinit}' does not exist in '{snippets_dir}'"
-        )
-        sys.exit(1)
+    if args.cinit:
+        snippets_dir = "/var/lib/vz/snippets"
+        cinit_file = os.path.join(snippets_dir, args.cinit)
+        if not os.path.exists(cinit_file):
+            logging.error(
+                f"The Cloud-Init file '{args.cinit}' does not exist in '{snippets_dir}'"
+            )
+            sys.exit(1)
 
     create_template(
         args.vmid,
@@ -138,7 +151,6 @@ def main():
         args.iso,
         args.ostype,
     )
-
 
 if __name__ == "__main__":
     main()
