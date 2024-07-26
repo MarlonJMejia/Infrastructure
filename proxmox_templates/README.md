@@ -18,7 +18,7 @@ create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml
 ```
 # Requirements
 
-### Install Depencendies 
+### Install Dependecies
 
 ```
 pip install -r requirements.txt
