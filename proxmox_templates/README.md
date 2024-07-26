@@ -5,25 +5,25 @@
 create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml --iso noble-server-cloudimg-amd64.img
 ```
 
-## with a VLAN
+### with a VLAN
 
 ```bash
 create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml --iso noble-server-cloudimg-amd64.img --vlan 30
 ```
 
-## Cloud-init file must be in /var/lib/vz/snippets
+### Cloud-init file must be in /var/lib/vz/snippets
 
 ```bash
 create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml --iso noble-server-cloudimg-amd64.img --vlan 30
 ```
 # Requirements
 
-## Install Depencendies 
+### Install Depencendies 
 
 ```
 pip install -r requirements.txt
 ```
 
-## Dependecies
+### Dependecies
 
 - tqdm
