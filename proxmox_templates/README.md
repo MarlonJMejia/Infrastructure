@@ -1,12 +1,3 @@
-# Requirements
-
-## Dependecies
-
-- tqdm
-
-```
-pip install -r requirements.txt
-```
 
 # Basic VM
 
@@ -25,3 +16,14 @@ create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml
 ```bash
 create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml --iso noble-server-cloudimg-amd64.img --vlan 30
 ```
+# Requirements
+
+## Install Depencendies 
+
+```
+pip install -r requirements.txt
+```
+
+## Dependecies
+
+- tqdm
