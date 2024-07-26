@@ -1,8 +1,14 @@
+# Requirements
+
+## Dependecies
+
+- tqdm
+
 ```
-pip install tqdm
+pip install -r requirements.txt
 ```
 
-Basic VM
+# Basic VM
 
 ```bash
 create_template.py --vmid 2999 --name "Ubuntu24-04" --cinit ubuntu-user-data.yml --iso noble-server-cloudimg-amd64.img
