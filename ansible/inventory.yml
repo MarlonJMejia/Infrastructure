@@ -21,24 +21,20 @@ all:
             wikijs.inside.lan: { wikijs.inside.lan }
 
         cloud:
-          # children:
-          #   proxy:
-          #     children:
-          #       nginx:
-          #         hosts:
-          #           proxy.inside.lan: { proxy.inside.lan }
-          #       caddy:
-          #         hosts:
-          #           caddy.inside.lan: { caddy.inside.lan }
-
-          s2s_tunnel:
-            children:
-              oci_cloud:
-                hosts:
-                  10.10.10.2:
-                    ansible_user: "ubuntu"
-                    ansible_ssh_private_key_file: "/home/illegal/.ssh/oci_wireguard"
-                vars: { wireguard_server: true, common_sshd_config_file: false }
+          children:
+            proxy:
+              children:
+                caddy:
+                  hosts:
+                    10.10.10.2:
+            s2s_tunnel:
+              children:
+                oci_cloud:
+                  hosts:
+                    10.10.10.2:
+                      ansible_user: "ubuntu"
+                      ansible_ssh_private_key_file: "~/.ssh/oci_wireguard"
+                  vars: { wireguard_server: true, common_sshd_config_file: false }
 
         irc:
           hosts:
