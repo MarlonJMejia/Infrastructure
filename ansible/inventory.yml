@@ -8,7 +8,7 @@ all:
             proxmox:
               hosts:
                 proxmox.inside.lan: { proxmox.inside.lan }
-              vars: { common_install_packages: false, common_sshd_config_file: false } 
+              # vars: { common_install_packages: false, common_sshd_config_file: false } 
 
         docker:
           children:
