@@ -16,6 +16,6 @@
 
 - name: Restart SSH service if configuration is valid
   service:
-    name: ssh
+    name: "{% if ansible_facts['os_family'] == 'Debian' %}ssh{% else %}sshd{% endif %}"
     state: restarted
   when: sshd_config_check.rc == 0

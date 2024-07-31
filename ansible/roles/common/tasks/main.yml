@@ -2,24 +2,32 @@
 - name: Configure Timezone to UTC
   community.general.timezone:
     name: Etc/UTC
+  tags:
+  - "set_timezone"
 
 # Install packages
 - name: Install Packages
   ansible.builtin.include_tasks: packages.yml
   when:
     - common_install_packages | default(true) | bool
+  tags:
+    - "common_packages"
 
 # Update SSH Config
 - name: Sshd_config
   ansible.builtin.include_tasks: sshd_config.yml
   when:
     - common_sshd_config_file | default(true) | bool
+  tags:
+    - "sshd_config"
 
 # Update MOTD
 - name: MOTD
   ansible.builtin.include_tasks: motd.yml
   when:
     - common_motd_info | default(true) | bool
+  tags:
+    - "motd"
 
 # Install unattended ugprades
 - name: Unattended-upgrades.yml
@@ -27,3 +35,5 @@
   when:
     - common_unattended_upgrades | default(true) | bool
     - ansible_facts['os_family'] == "Debian"
+  tags:
+    - "unattended"

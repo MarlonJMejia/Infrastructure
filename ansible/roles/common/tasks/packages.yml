@@ -34,6 +34,7 @@
       ansible.builtin.apt: { autoremove: yes, clean: true }
 
 #Redhat distributions
+
 - name: Upgrade and install packages
   when: ansible_facts['os_family'] == "RedHat"
   block:
