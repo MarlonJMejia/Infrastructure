@@ -20,7 +20,7 @@ all:
           hosts:
             wikijs.inside.lan: { wikijs.inside.lan }
 
-        external:
+        cloud:
           # children:
           #   proxy:
           #     children:
