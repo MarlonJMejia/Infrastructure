@@ -3,7 +3,7 @@
   community.general.timezone:
     name: Etc/UTC
   tags:
-  - "set_timezone"
+    - "set_timezone"
 
 # Install packages
 - name: Install Packages
