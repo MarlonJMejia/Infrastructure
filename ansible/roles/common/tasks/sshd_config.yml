@@ -1,11 +1,21 @@
 ---
-- name: Copy sshd_config to remote hosts
-  ansible.builtin.copy:
-    src: sshd_config
-    dest: /etc/ssh/sshd_config
+- name: Deploy sshd_config from template
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config.d/00-general.conf
     owner: root
     group: root
-    mode: "0600"
-    validate: "sshd -t -f %s"
-    checksum: false
-  notify: Restart ssh
+    mode: "0644"
+    #validate: 'sshd -t'
+
+- name: Check SSH configuration
+  command: sshd -t
+  register: sshd_config_check
+  failed_when: sshd_config_check.rc != 0
+  changed_when: false
+
+- name: Restart SSH service if configuration is valid
+  service:
+    name: ssh
+    state: restarted
+  when: sshd_config_check.rc == 0

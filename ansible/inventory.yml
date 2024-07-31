@@ -30,7 +30,7 @@ all:
                 caddy:
                   hosts:
                     caddy.inside.lan: { caddy.inside.lan }
-            
+
         s2s_tunnel:
           children:
             oci_cloud:
