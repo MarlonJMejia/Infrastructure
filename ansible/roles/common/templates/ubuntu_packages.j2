@@ -1,5 +1,5 @@
-{% for host in ansible_play_hosts_all %}
-{% if host in ansible_play_hosts %}
+{# {% for host in ansible_play_hosts_all %}
+{% if host in ansible_play_hosts %} #}
 {%- set before_packages = packages_before.stdout | from_json -%}
 {%- set after_packages = packages_after.stdout | from_json -%}
 
@@ -38,5 +38,5 @@
   "removed": {{ removed | to_nice_json }},
   "changed": {{ changed | to_nice_json }}
 }
-{% endif  %}
-{% endfor %}
+{# {% endif  %}
+{% endfor %} #}

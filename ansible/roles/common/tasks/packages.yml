@@ -29,11 +29,10 @@
     - name: Create template file
       ansible.builtin.template:
         src: ubuntu_packages.j2
-        dest: ../packageinfo-{{ ansible_date_time.iso8601 }}.txt
+        dest: ../packageinfo/packageinfo-{{inventory_hostname}}-{{ ansible_date_time.iso8601 }}.json
       vars:
         packages_before: "{{ packages_before }}"
         packages_after: "{{ packages_after }}"
-      run_once: true
       delegate_to: localhost
 
     - name: Autoremove and Clean packages
