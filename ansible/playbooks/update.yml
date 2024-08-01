@@ -2,5 +2,9 @@
 - hosts: all 
   become: true
   gather_facts: true
+  #If you don't have dependencies on tasks or managed nodes, you can change strategy to
+  #free, which allows Ansible to execute tasks on managed hosts until the end of the play
+  #without waiting for other hosts to finish their tasks:
+  strategy: free 
   roles:
     - { role: common, tags: all }
