@@ -1,9 +1,9 @@
 #!/bin/bash
 IPT="/sbin/iptables"
 
-IN_FACE="{{ ansible_facts.ansible_default_ipv4.interface }}"                  # NIC connected to the internet
+IN_FACE="{{ ansible_facts.ansible_default_ipv4.interface }}" # NIC connected to the internet
 WG_FACE="wg0"                     # WG NIC
-SUB_NET="10.20.1.0/24"            # WG IPv4 sub/net aka CIDR
+SUB_NET="10.10.10.2/28"            # WG IPv4 sub/net aka CIDR
 WG_PORT="51820"                   # WG udp port
 
 # IPv4 rules #

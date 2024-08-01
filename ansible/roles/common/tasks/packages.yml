@@ -1,13 +1,16 @@
 ---
 # Debian distributions
 - name: Upgrade and install packages
-  when: ansible_facts['os_family'] == "Debian"
   tags:
     - common_packages
+  when: ansible_facts['os_family'] == "Debian"
   block:
     - name: Get list of installed packages before update
-      ansible.builtin.shell: |
-        dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
+        executable: /bin/bash
       register: packages_before
       changed_when: false
 
@@ -21,19 +24,19 @@
         name: "{{ common_packages_to_install_debian }}"
 
     - name: Get list of installed packages after update
-      ansible.builtin.shell: |
-        dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
+        executable: /bin/bash
       register: packages_after
       changed_when: false
 
     - name: Craete JSON File with Difference in Packages
       ansible.builtin.template:
         src: ubuntu_packages.j2
-        dest: ../packageinfo/packageinfo-{{inventory_hostname}}-{{ ansible_date_time.iso8601 }}.json
-        mode: u=rw,g=rw,o=rw
-      vars:
-        packages_before: "{{ packages_before }}"
-        packages_after: "{{ packages_after }}"
+        dest: ../packageinfo/packageinfo-{{ inventory_hostname }}-{{ ansible_date_time.date }}.json
+        mode: "0666"
       # run_once: true
       delegate_to: localhost
 
@@ -60,6 +63,7 @@
       ansible.builtin.template:
         src: report.j2
         dest: ../report-{{ ansible_date_time.iso8601_micro }}.txt
+        mode: "0666"
       # run_once: true
       delegate_to: localhost
 

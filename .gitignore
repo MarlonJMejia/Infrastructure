@@ -10,3 +10,5 @@ ansible/cached_facts/
 ansible/examples/
 packageinfo*
 Pipfile
+terraform/oracle
+ansible/roles/wireguard/
