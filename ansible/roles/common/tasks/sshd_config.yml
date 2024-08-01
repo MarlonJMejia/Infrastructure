@@ -6,7 +6,7 @@
     owner: root
     group: root
     mode: "0644"
-    #validate: 'sshd -t'
+    # validate: 'sshd -t -f %s'
 
 - name: Check SSH configuration
   ansible.builtin.command: sshd -t

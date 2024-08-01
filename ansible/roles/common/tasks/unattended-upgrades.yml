@@ -1,49 +1,53 @@
 ---
-- name: Install unattended-upgrades package
-  ansible.builtin.apt:
-    name: unattended-upgrades
-    state: present
+- block:
 
-- name: Enable unattended-upgrades
-  ansible.builtin.command: dpkg-reconfigure -f noninteractive unattended-upgrades
-  register: my_output
-  changed_when: my_output.rc != 0
+  - name: Install unattended-upgrades package
+    ansible.builtin.apt:
+      name: unattended-upgrades
+      state: present
 
-- name: Copy unattended-upgrades configuration file
-  ansible.builtin.copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    owner: root
-    group: root
-    
-    mode: "0644"
+  - name: Enable unattended-upgrades
+    ansible.builtin.command: dpkg-reconfigure -f noninteractive unattended-upgrades
+    register: my_output
+    changed_when: my_output.rc != 0
 
-- name: Copy 20auto-upgrades file
-  ansible.builtin.copy:
-    src: 20auto-upgrades
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    owner: root
-    group: root
-    checksum: false
-    mode: "0644"
+  - name: Copy unattended-upgrades configuration file
+    ansible.builtin.copy:
+      src: 50unattended-upgrades
+      dest: /etc/apt/apt.conf.d/50unattended-upgrades
+      owner: root
+      group: root
+      
+      mode: "0644"
 
-- name: Ensure the /etc/update-motd.d directory exists
-  ansible.builtin.file:
-    path: /etc/update-motd.d
-    state: directory
-    mode: "0755"
+  - name: Copy 20auto-upgrades file
+    ansible.builtin.copy:
+      src: 20auto-upgrades
+      dest: /etc/apt/apt.conf.d/20auto-upgrades
+      owner: root
+      group: root
+      checksum: false
+      mode: "0644"
 
-- name: Copy update-motd-unattended-upgrades file
-  ansible.builtin.copy:
-    src: update-motd-unattended-upgrades
-    dest: /etc/update-motd.d/update-motd-unattended-upgrades
-    owner: root
-    group: root
-    checksum: false
-    mode: "0755"
+  - name: Ensure the /etc/update-motd.d directory exists
+    ansible.builtin.file:
+      path: /etc/update-motd.d
+      state: directory
+      mode: "0755"
 
-- name: Ensure unattended-upgrades service is running
-  ansible.builtin.systemd:
-    name: unattended-upgrades
-    state: started
-    enabled: true
+  - name: Copy update-motd-unattended-upgrades file
+    ansible.builtin.copy:
+      src: update-motd-unattended-upgrades
+      dest: /etc/update-motd.d/update-motd-unattended-upgrades
+      owner: root
+      group: root
+      checksum: false
+      mode: "0755"
+
+  - name: Ensure unattended-upgrades service is running
+    ansible.builtin.systemd:
+      name: unattended-upgrades
+      state: started
+      enabled: true
+  tags:
+    - "unattended"
