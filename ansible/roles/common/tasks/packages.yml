@@ -11,10 +11,10 @@
       register: packages_before
       changed_when: false
 
-    # - name: Upgrade dependencies
-    #   ansible.builtin.apt:
-    #     upgrade: true
-    #     cache_valid_time: 43200
+    - name: Upgrade dependencies
+      ansible.builtin.apt:
+        upgrade: true
+        cache_valid_time: 43200
 
     - name: Install common packages
       ansible.builtin.apt:
@@ -26,15 +26,15 @@
       register: packages_after
       changed_when: false
 
-    - name: Create file
+    - name: Create template file
       ansible.builtin.template:
         src: ubuntu_packages.j2
         dest: ../packageinfo-{{ ansible_date_time.iso8601 }}.txt
-      run_once: true
-      delegate_to: localhost
       vars:
         packages_before: "{{ packages_before }}"
         packages_after: "{{ packages_after }}"
+      run_once: true
+      delegate_to: localhost
 
     - name: Autoremove and Clean packages
       ansible.builtin.apt: { autoremove: true, clean: true }
@@ -58,7 +58,7 @@
     - name: Write a report about what has been done
       ansible.builtin.template:
         src: report.j2
-        dest: ../report-{{ ansible_date_time.iso8601_basic_short }}.txt
+        dest: ../report-{{ ansible_date_time.iso8601_micro }}.txt
       run_once: true
       delegate_to: localhost
 

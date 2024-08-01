@@ -1,9 +1,4 @@
 {% for host in ansible_play_hosts_all %}
-{% if host not in ansible_play_hosts %}
-{{ host }} - was not reachable.
-{% endif  %}
-{% endfor %}
-{% for host in ansible_play_hosts_all %}
 {% if host in ansible_play_hosts %}
 {%- set before_packages = packages_before.stdout | from_json -%}
 {%- set after_packages = packages_after.stdout | from_json -%}
