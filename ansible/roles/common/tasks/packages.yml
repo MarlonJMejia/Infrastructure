@@ -26,13 +26,15 @@
       register: packages_after
       changed_when: false
 
-    - name: Create template file
+    - name: Craete JSON File with Difference in Packages
       ansible.builtin.template:
         src: ubuntu_packages.j2
         dest: ../packageinfo/packageinfo-{{inventory_hostname}}-{{ ansible_date_time.iso8601 }}.json
+        mode: u=rw,g=rw,o=rw
       vars:
         packages_before: "{{ packages_before }}"
         packages_after: "{{ packages_after }}"
+      # run_once: true
       delegate_to: localhost
 
     - name: Autoremove and Clean packages
@@ -58,7 +60,7 @@
       ansible.builtin.template:
         src: report.j2
         dest: ../report-{{ ansible_date_time.iso8601_micro }}.txt
-      run_once: true
+      # run_once: true
       delegate_to: localhost
 
     - name: Autoremove unneeded packages installed as dependencies
