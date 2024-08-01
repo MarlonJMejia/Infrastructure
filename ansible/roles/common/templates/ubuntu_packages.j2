@@ -1,33 +1,37 @@
-{# {% for host in ansible_play_hosts_all %}
-{% if host not in ansible_play_hosts %}
-{{ host }} - was not reachable.
-{% endif  %}
-{% endfor %}
-{% for host in ansible_play_hosts_all %}
-{% set keys1 = ansible_facts.packages.keys() %}
-{% set keys2 = packages_before.ansible_facts.packages.keys() %}
-{% set different_keys = keys1 | difference(keys2) | union(keys2 | difference(keys1)) %}
-{% endfor %}
+{%- set before_packages = packages_before.stdout | from_json -%}
+{%- set after_packages = packages_after.stdout | from_json -%}
 
-{% for host in ansible_play_hosts_all %}
-{{ host }}
-{% if different_keys is defined and different_keys %}
-new_packages:
-{% for key in different_keys %}
-- {{ key }}
-{% endfor %}
-{% else %}
-No new packages found.
-{% endif %}
-{% endfor %} #}
-{# 
-{% for host, packages in host_packages.items() %}
-{{ host }}:
-{% for package in packages %}
-{{ package }}
-{% endfor %}
-{% endfor %} #}
+{%- set before_dict = {} -%}
+{%- set after_dict = {} -%}
 
-{{packages_after}}
-{{packages_before}}
-{{ (packages_before | difference(packages_after) | first )}}
+{%- for pkg in before_packages -%}
+  {%- set _ = before_dict.update({pkg.name: pkg.version}) -%}
+{%- endfor -%}
+
+{%- for pkg in after_packages -%}
+  {%- set _ = after_dict.update({pkg.name: pkg.version}) -%}
+{%- endfor -%}
+
+{%- set added = {} -%}
+{%- set removed = {} -%}
+{%- set changed = {} -%}
+
+{%- for name, version in after_dict.items() -%}
+  {%- if name not in before_dict -%}
+    {%- set _ = added.update({name: version}) -%}
+  {%- elif before_dict[name] != version -%}
+    {%- set _ = changed.update({name: {'old': before_dict[name], 'new': version}}) -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- for name, version in before_dict.items() -%}
+  {%- if name not in after_dict -%}
+    {%- set _ = removed.update({name: version}) -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{
+  "added": {{ added | to_nice_json }},
+  "removed": {{ removed | to_nice_json }},
+  "changed": {{ changed | to_nice_json }}
+}

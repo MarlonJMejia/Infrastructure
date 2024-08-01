@@ -6,8 +6,10 @@
     - common_packages
   block:
     - name: Get list of installed packages before update
-      ansible.builtin.command: dpkg-query -l
+      ansible.builtin.shell: |
+        dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
       register: packages_before
+      changed_when: false
 
     - name: Upgrade dependencies
       ansible.builtin.apt:
@@ -20,9 +22,11 @@
         name: "{{ common_packages_to_install_debian }}"
       register: app_install_debian
 
-    - name: Get list of installed packages before update
-      ansible.builtin.command: dpkg-query -l
+    - name: Get list of installed packages after update
+      ansible.builtin.shell: |
+        dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
       register: packages_after
+      changed_when: false
 
     - name: Create file
       ansible.builtin.template:
@@ -35,7 +39,6 @@
       ansible.builtin.apt: { autoremove: true, clean: true }
 
 ## Redhat Distribution
-
 - name: Upgrade and install packages
   when: ansible_facts['os_family'] == "RedHat"
   tags:
