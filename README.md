@@ -1,6 +1,6 @@
 # Ansible
 
-`ansible-playbook site.yml`
+`ansible-playbook site.yml --forks 100`
 
 `ansible-playbook site.yml --limit webservers`
 

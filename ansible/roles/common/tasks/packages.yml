@@ -11,16 +11,14 @@
       register: packages_before
       changed_when: false
 
-    - name: Upgrade dependencies
-      ansible.builtin.apt:
-        upgrade: true
-        cache_valid_time: 43200
-      register: app_upgrade_debian
+    # - name: Upgrade dependencies
+    #   ansible.builtin.apt:
+    #     upgrade: true
+    #     cache_valid_time: 43200
 
     - name: Install common packages
       ansible.builtin.apt:
         name: "{{ common_packages_to_install_debian }}"
-      register: app_install_debian
 
     - name: Get list of installed packages after update
       ansible.builtin.shell: |
@@ -31,9 +29,12 @@
     - name: Create file
       ansible.builtin.template:
         src: ubuntu_packages.j2
-        dest: ../packageinfo-{{ ansible_date_time.iso8601_basic_short }}.txt
+        dest: ../packageinfo-{{ ansible_date_time.iso8601 }}.txt
       run_once: true
       delegate_to: localhost
+      vars:
+        packages_before: "{{ packages_before }}"
+        packages_after: "{{ packages_after }}"
 
     - name: Autoremove and Clean packages
       ansible.builtin.apt: { autoremove: true, clean: true }
