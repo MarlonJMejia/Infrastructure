@@ -5,15 +5,14 @@
   tags:
     - common_packages
   block:
-    - name: Gather the package facts
-      ansible.builtin.package_facts:
-        manager: auto
+    - name: Get list of installed packages before update
+      ansible.builtin.command: dpkg-query -l
       register: packages_before
 
     - name: Upgrade dependencies
       ansible.builtin.apt:
-        cache_valid_time: 43200
         upgrade: true
+        cache_valid_time: 43200
       register: app_upgrade_debian
 
     - name: Install common packages
@@ -21,9 +20,9 @@
         name: "{{ common_packages_to_install_debian }}"
       register: app_install_debian
 
-    - name: Gather the package facts
-      ansible.builtin.package_facts:
-        manager: auto
+    - name: Get list of installed packages before update
+      ansible.builtin.command: dpkg-query -l
+      register: packages_after
 
     - name: Create file
       ansible.builtin.template:

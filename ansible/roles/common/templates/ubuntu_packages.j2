@@ -1,4 +1,4 @@
-{% for host in ansible_play_hosts_all %}
+{# {% for host in ansible_play_hosts_all %}
 {% if host not in ansible_play_hosts %}
 {{ host }} - was not reachable.
 {% endif  %}
@@ -19,4 +19,15 @@ new_packages:
 {% else %}
 No new packages found.
 {% endif %}
+{% endfor %} #}
+{# 
+{% for host, packages in host_packages.items() %}
+{{ host }}:
+{% for package in packages %}
+{{ package }}
 {% endfor %}
+{% endfor %} #}
+
+{{packages_after}}
+{{packages_before}}
+{{ (packages_before | difference(packages_after) | first )}}
