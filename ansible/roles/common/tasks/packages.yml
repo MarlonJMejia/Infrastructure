@@ -2,6 +2,8 @@
 # Debian distributions
 - name: Upgrade and install packages
   when: ansible_facts['os_family'] == "Debian"
+  tags:
+    - common_packages
   block:
     - name: Gather the package facts
       ansible.builtin.package_facts:
@@ -29,14 +31,16 @@
         dest: ../packageinfo-{{ ansible_date_time.iso8601_basic_short }}.txt
       run_once: true
       delegate_to: localhost
-    
-    - name: Autoremove and Clean packages
-      ansible.builtin.apt: { autoremove: yes, clean: true }
 
-#Redhat distributions
+    - name: Autoremove and Clean packages
+      ansible.builtin.apt: { autoremove: true, clean: true }
+
+## Redhat Distribution
 
 - name: Upgrade and install packages
   when: ansible_facts['os_family'] == "RedHat"
+  tags:
+    - common_packages
   block:
     - name: Update repositories
       ansible.builtin.dnf:
@@ -54,7 +58,7 @@
         dest: ../report-{{ ansible_date_time.iso8601_basic_short }}.txt
       run_once: true
       delegate_to: localhost
-      
+
     - name: Autoremove unneeded packages installed as dependencies
       ansible.builtin.dnf:
-        autoremove: yes
+        autoremove: true
