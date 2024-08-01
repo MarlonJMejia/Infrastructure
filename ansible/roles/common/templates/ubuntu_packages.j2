@@ -31,6 +31,7 @@
 {%- endfor -%}
 
 {
+  "host": "{{ inventory_hostname }}",
   "added": {{ added | to_nice_json }},
   "removed": {{ removed | to_nice_json }},
   "changed": {{ changed | to_nice_json }}
