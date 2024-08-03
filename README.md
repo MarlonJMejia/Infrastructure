@@ -12,6 +12,12 @@
 
 `ansible-playbook playbooks/update.yml --tags "set_tiemzone"`
 
+* Install required roles
+
+```bash
+ansible-galaxy role install -r requirements.yml
+```
+
 ## Creating your own facts
 
 ```yaml
