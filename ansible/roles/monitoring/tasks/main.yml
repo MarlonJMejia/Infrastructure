@@ -1,0 +1,60 @@
+---
+- name: Copy docker-compose.yml for Grafana Prometheus
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    force: true
+    dest: /root/docker-compose.yml
+    mode: "0644"
+
+- name: Copy variable files to /root/.env
+  ansible.builtin.copy:
+    src: env_vars
+    dest: /root/.env
+    mode: "600"
+
+- name: Ensure .bashrc exists
+  ansible.builtin.file:
+    path: /{{ ansible_user }}/.bashrc
+    state: touch
+    owner: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Add environment variables to .bashrc
+  ansible.builtin.blockinfile:
+    path: /{{ ansible_user }}/.bashrc
+    block: |
+      # Environment variables
+      {% for item in env_vars %}
+      {% for key, value in item.items() %}
+      export {{ key }}="{{ value }}"
+      {% endfor %}
+      {% endfor %}
+    state: present
+
+- name: Source .bashrc to apply environment variables
+  ansible.builtin.shell: source /{{ ansible_user }}/.bashrc
+  args:
+    executable: /bin/bash
+  register: my_output
+  changed_when: my_output.rc != 0
+
+- name: Copy Prometheus.yml
+  ansible.builtin.copy:
+    src: prometheus.yml
+    force: true
+    dest: /root/prometheus.yml
+    mode: "0644"
+
+- name: Copy loki-config.yml
+  ansible.builtin.copy:
+    src: loki-config.yml
+    force: true
+    dest: /root/loki-config.yml
+    mode: "0644"
+
+- name: Start Prometheus Grafana docker compose
+  community.docker.docker_compose_v2:
+    project_src: /root/
+    pull: always
+    state: present
+    recreate: always

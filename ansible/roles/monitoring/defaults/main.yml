@@ -1,0 +1,9 @@
+---
+env_vars:
+# GENERAL
+  - DOCKER_MONITORING_NET: monitoring_net
+  - TZ: UTC
+# GRAFANA
+  # - GF_SECURITY_ADMIN_USER: admin
+  # - GF_SECURITY_ADMIN_PASSWORD: admin
+  - GF_USERS_ALLOW_SIGN_UP: "false"
