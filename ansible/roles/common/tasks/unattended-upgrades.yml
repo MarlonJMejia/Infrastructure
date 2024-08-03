@@ -32,30 +32,6 @@
         checksum: false
         mode: "0644"
 
-    - name: Ensure the /etc/update-motd.d directory exists
-      ansible.builtin.file:
-        path: /etc/update-motd.d
-        state: directory
-        mode: "0755"
-
-    - name: Copy update-motd-unattended-upgrades file
-      ansible.builtin.copy:
-        src: update-motd-unattended-upgrades
-        dest: /etc/update-motd.d/update-motd-unattended-upgrades
-        owner: root
-        group: root
-        checksum: false
-        mode: "0755"
-
-    - name: Copy update-motd-unattended-upgrades file
-      ansible.builtin.copy:
-        src: update-motd-unattended-upgrades
-        dest: /etc/update-motd.d/update-motd-unattended-upgrades
-        owner: root
-        group: root
-        checksum: false
-        mode: "0755"
-
     - name: Ensure unattended-upgrades service is running
       ansible.builtin.systemd:
         name: unattended-upgrades

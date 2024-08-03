@@ -21,6 +21,7 @@ common_packages_to_install_debian:
   - needrestart
   - debsecan
   - tmux
+  - bc
 
 common_packages_to_install_redhat:
   - curl
@@ -36,11 +37,3 @@ common_packages_to_install_redhat:
   - bash-completion
   - dnf-plugins-core
   - tmux
-
-# MOTD Information
-common_motd_vars:
-  - " FQDN:    ": "{{ ansible_fqdn }}"
-  - " Distro:  ": "{{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }}"
-  - " Virtual: ": "{{ 'YES' if ansible_virtualization_role == 'guest' else 'NO' }}"
-  - " CPUs:    ": "{{ ansible_processor_vcpus }}"
-  - " RAM:     ": "{{ (ansible_memtotal_mb / 1000) | round(1) }}GB"
