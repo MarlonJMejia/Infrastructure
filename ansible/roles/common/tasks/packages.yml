@@ -12,7 +12,7 @@
           dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
         executable: /bin/bash
       register: packages_before
-      changed_when: false
+      changed_when: packages_before == 0
 
     - name: Upgrade dependencies
       ansible.builtin.apt:
@@ -30,7 +30,7 @@
           dpkg-query -l | awk '/^ii/ {print "{\"name\": \"" $2 "\", \"version\": \"" $3 "\"}"}' | jq -s '.'
         executable: /bin/bash
       register: packages_after
-      changed_when: false
+      changed_when: packages_after.rc == 0
 
     - name: Craete JSON File with Difference in Packages
       ansible.builtin.template:
