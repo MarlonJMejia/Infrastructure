@@ -3,7 +3,7 @@
 - name: Upgrade and install packages
   tags:
     - common_packages
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] is defined and ansible_facts['os_family'] == "Debian" and ansible_facts['os_family']
   block:
     - name: Get list of installed packages before update
       ansible.builtin.shell:
@@ -45,14 +45,19 @@
 
 ## Redhat Distribution
 - name: Upgrade and install packages
-  when: ansible_facts['os_family'] == "RedHat"
   tags:
     - common_packages
+  when: ansible_facts['os_family'] is defined and ansible_facts['os_family'] == "RedHat"
   block:
     - name: Update repositories
       ansible.builtin.dnf:
         update_cache: true
       register: app_upgrade
+
+    - name: Install EPEL repo
+      yum:
+        name: epel-release
+        state: present
 
     - name: Install Packages
       ansible.builtin.dnf:
