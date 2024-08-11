@@ -1,8 +1,8 @@
 ---
 - name: Build unattended-upgrades
-  when: true
   tags:
     - unattended
+  when: ansible_facts['os_family'] is defined and ansible_facts['os_family'] == "Debian"
   block:
     - name: Install unattended-upgrades package
       ansible.builtin.apt:

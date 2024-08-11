@@ -1,16 +1,16 @@
 ---
 - name: Set MOTD
   tags:
-    - "motd"
+    - motd
   block:
-  - name: Clear static /etc/motd
-    ansible.builtin.copy:
-      content: ""
-      dest: /etc/motd
-      mode: preserve
+    - name: Clear static /etc/motd
+      ansible.builtin.copy:
+        content: ""
+        dest: /etc/motd
+        mode: preserve
 
-  - name: Update MOTD Dynamic Files
-    ansible.builtin.copy:
-      src: update-motd.d/
-      dest: /etc/update-motd.d/
-      mode: preserve
+    - name: Update MOTD Dynamic Files
+      ansible.builtin.copy:
+        src: update-motd.d/
+        dest: /etc/update-motd.d/
+        mode: preserve

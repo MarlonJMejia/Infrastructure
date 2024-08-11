@@ -11,7 +11,7 @@ Unreachable systems:
 Installed packages from upgrade:
 ----------------------------------------------
 {% for host in ansible_play_hosts_all %}
-{% if hostvars[host].app_upgrade is defined %}
+{% if hostvars[host].app_upgrade is defined and hostvars[host].app_upgrade.results is defined %}
 {% for package in hostvars[host].app_upgrade.results %}
 {{ host }} - Package {{ package }} was installed.
 {% endfor %}
@@ -21,7 +21,7 @@ Installed packages from upgrade:
 Installed packages:
 ----------------------------------------------
 {% for host in ansible_play_hosts_all %}
-{% if hostvars[host].app_install is defined %}
+{% if hostvars[host].app_install is defined and hostvars[host].app_upgrade.results is defined %}
 {% if hostvars[host].app_install.changed is sameas true %}
 {% for package in hostvars[host].app_install.results %}
 {{ host }} - Package {{ package }} was installed.

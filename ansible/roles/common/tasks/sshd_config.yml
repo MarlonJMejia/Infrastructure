@@ -1,26 +1,26 @@
 ---
-- name: sshd_config
+- name: Sshd_config
   when: true
   tags:
-    - "sshd_config"
+    - sshd_config
   block:
-  - name: Deploy sshd_config from template
-    ansible.builtin.template:
-      src: sshd_config.j2
-      dest: /etc/ssh/sshd_config.d/00-general.conf
-      owner: root
-      group: root
-      mode: "0644"
-      # validate: 'sshd -t -f %s'
+    - name: Deploy sshd_config from template
+      ansible.builtin.template:
+        src: sshd_config.j2
+        dest: /etc/ssh/sshd_config.d/00-general.conf
+        owner: root
+        group: root
+        mode: "0644"
+    # validate: 'sshd -t -f %s'
 
-  - name: Check SSH configuration
-    ansible.builtin.command: sshd -t
-    register: sshd_config_check
-    failed_when: sshd_config_check.rc != 0
-    changed_when: false
+    - name: Check SSH configuration
+      ansible.builtin.command: sshd -t
+      register: sshd_config_check
+      failed_when: sshd_config_check.rc != 0
+      changed_when: false
 
-  - name: Restart SSH service if configuration is valid
-    ansible.builtin.service:
-      name: "{% if ansible_facts['os_family'] == 'Debian' %}ssh{% else %}sshd{% endif %}"
-      state: restarted
-    when: sshd_config_check.rc == 0
+    - name: Restart SSH service if configuration is valid
+      ansible.builtin.service:
+        name: "{% if ansible_facts['os_family'] == 'Debian' %}ssh{% else %}sshd{% endif %}"
+        state: restarted
+      when: sshd_config_check.rc == 0

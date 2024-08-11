@@ -18,22 +18,22 @@ common_packages_to_install_debian:
   - ripgrep
   - nala
   - bash-completion
-  - needrestart
   - debsecan
-  - tmux
   - bc
 
 common_packages_to_install_redhat:
+  - dnf-automatic
   - curl
   - jq
   - vim
   - git
   - ncurses
-  - tmux
   - ncdu
   - lsof
   - fd-find
   - ripgrep
+  - needrestart
+  - bc
   - bash-completion
   - dnf-plugins-core
   - tmux
