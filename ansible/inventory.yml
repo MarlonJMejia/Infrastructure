@@ -26,12 +26,12 @@ all:
               children:
                 caddy:
                   hosts:
-                    158.101.100.248:
+                    10.10.10.2:
             s2s_tunnel:
               children:
                 oci_cloud:
                   hosts:
-                    158.101.100.248:
+                    10.10.10.2:
                       ansible_user: "opc"
                       ansible_ssh_private_key_file: "~/.ssh/oci_wireguard"
                   vars: { wireguard_server: true, common_sshd_config_file: false }
