@@ -20,6 +20,7 @@ common_packages_to_install_debian:
   - bash-completion
   - debsecan
   - bc
+  - sysstat
 
 common_packages_to_install_redhat:
   - dnf-automatic
@@ -32,8 +33,8 @@ common_packages_to_install_redhat:
   - lsof
   - fd-find
   - ripgrep
-  - needrestart
   - bc
   - bash-completion
   - dnf-plugins-core
   - tmux
+  - sysstat

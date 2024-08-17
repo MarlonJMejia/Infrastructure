@@ -44,6 +44,8 @@ services:
   influxdb:
     image: influxdb:2.7.6-alpine
     container_name: influxdb2
+    hostname: influxdb2
+    restart: unless-stopped
     ports:
       - 8086:8086
     extra_hosts:
@@ -52,6 +54,8 @@ services:
       - ./influxdb2_data:/var/lib/influxdb2
       - ./influxdb2/config:/etc/influxdb2
       - ./influxdb2/scripts:/docker-entrypoint-initdb.d
+    labels:
+      org.label-schema.group: "monitoring"
 
   # WEB BASED UI VISUALISATION OF METRICS
   grafana:
