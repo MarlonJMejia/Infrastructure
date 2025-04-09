@@ -2,7 +2,7 @@
 - hosts: proxmox
   become: true
   gather_facts: true
-  vars: { common_sshd_config_file: false, common_motd_info: false }
+  vars: { common_sshd_config_file: false, common_motd_info: false, common_install_packages: true }
   roles:
     - { role: proxmox, tags: hypervisor }
     - { role: common, tags: all }
