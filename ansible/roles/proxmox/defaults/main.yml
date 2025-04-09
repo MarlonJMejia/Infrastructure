@@ -1,0 +1,6 @@
+# API Token configuration
+proxmox_enable_api_token: true
+proxmox_api_token_user: "root@pam"
+proxmox_api_token_name: "terraform"
+proxmox_api_token_expiry: "0"  # 0 means no expiration
+proxmox_api_token_comment: "API token for automation"

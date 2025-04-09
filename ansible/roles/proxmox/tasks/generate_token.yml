@@ -1,0 +1,43 @@
+---
+
+- name: Verify the token exists
+  ansible.builtin.shell: |
+    pveum user token list {{ proxmox_api_token_user }} | grep -q "{{ proxmox_api_token_name }}"
+  register: token_exists
+  changed_when: token_exists == 0
+  failed_when: false
+
+- name: Generate API token
+  when: token_exists.rc != 0
+  block:
+
+    - name: Generate API token with captured output
+      ansible.builtin.shell: >-
+        pveum user token add {{ proxmox_api_token_user }} {{ proxmox_api_token_name }} \
+          --comment="{{ proxmox_api_token_comment }}" \
+          --expire {{ proxmox_api_token_expiry }} \
+          --privsep=0 \
+      register: token_output
+
+    - name: Extract token information
+      ansible.builtin.set_fact:
+        proxmox_api_token_id: "{{ proxmox_api_token_user }}!{{ proxmox_api_token_name }}"
+        proxmox_api_token_secret: >-
+          {{
+            (token_output.stdout_lines | select('match', '^full-token:.*') | list | first | default('')) 
+            | regex_replace('^full-token: (\\S+)$', '\\1')
+          }}
+
+    - name: Debug token command output
+      debug:
+        var: token_output.stdout_lines
+
+    - name: Show API token information
+      ansible.builtin.debug:
+        msg: |
+          API Token created successfully:
+          -----------------------------------------
+          TOKEN ID: {{ proxmox_api_token_id }}
+          SECRET: {{ proxmox_api_token_secret }}
+          -----------------------------------------
+          Store this information securely. The token secret can't be retrieved again.

@@ -13,3 +13,4 @@ Pipfile
 terraform/oracle
 ansible/roles/wireguard/
 test.yml
+report-*
